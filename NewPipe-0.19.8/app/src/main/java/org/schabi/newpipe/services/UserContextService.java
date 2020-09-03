@@ -82,6 +82,30 @@ public class UserContextService extends Service implements SensorEventListener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Starting service");
 
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (results == null || results.length == 0) {
+                    return;
+                }
+                float max = -1;
+                int idx = -1;
+                for (int i = 0; i < results.length; i++) {
+                    if (results[i] > max) {
+                        idx = i;
+                        max = results[i];
+                    }
+                }
+
+                if (max > 0.50 && idx != prevIdx) {
+                    Log.d(TAG, "User state: " + labels[idx]);
+                    sendContextToActivity(labels[idx]);
+                    prevIdx = idx;
+                }
+            }
+        }, 1000, 3000);
+
         return Service.START_STICKY;
     }
 
@@ -171,12 +195,6 @@ public class UserContextService extends Service implements SensorEventListener {
                     idx = i;
                     max = results[i];
                 }
-            }
-
-            if (max > 0.50 && idx != prevIdx) {
-                Log.d(TAG, "User state: " + labels[idx]);
-                sendContextToActivity(labels[idx]);
-                prevIdx = idx;
             }
 
             ax.clear(); ay.clear(); az.clear();
