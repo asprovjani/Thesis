@@ -20,8 +20,11 @@
 
 package org.schabi.newpipe;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -43,6 +46,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -129,6 +133,23 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    //BroadcastReceiver
+    UserContextReceiver receiver;
+    String result;
+    class UserContextReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("USER_CONTEXT_ACTION")) {
+                result = intent.getStringExtra("USER_CONTEXT");
+                showMessage(result);
+            }
+        }
+    }
+
+    private void showMessage(String message) {
+        Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+    }
+
     /*//////////////////////////////////////////////////////////////////////////
     // Activity's LifeCycle
     //////////////////////////////////////////////////////////////////////////*/
@@ -165,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
         if (AndroidTvUtils.isTv(this)) {
             FocusOverlayView.setupFocusObserver(this);
         }
+
+        receiver = new UserContextReceiver();
+        registerReceiver(receiver, new IntentFilter("USER_CONTEXT_ACTION"));
     }
 
     @Override
@@ -187,6 +211,8 @@ public class MainActivity extends AppCompatActivity {
             unbindService(mConnection);
             isBound = false;
         }
+
+        unregisterReceiver(receiver);
     }
 
     private void setupDrawer() throws Exception {
