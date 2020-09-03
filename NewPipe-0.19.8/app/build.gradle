@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'checkstyle'
+//apply plugin: 'checkstyle'
 
 android {
     compileSdkVersion 29
@@ -95,31 +95,15 @@ configurations {
     checkstyle
     ktlint
 }
-
+/*
 checkstyle {
     configFile rootProject.file('checkstyle.xml')
     ignoreFailures false
     showViolations true
     toolVersion = checkstyleVersion
-}
+} */
 
-task runCheckstyle(type: Checkstyle) {
-    source 'src'
-    include '**/*.java'
-    exclude '**/gen/**'
-    exclude '**/R.java'
-    exclude '**/BuildConfig.java'
-    exclude 'main/java/us/shandian/giga/**'
 
-    classpath = configurations.checkstyle
-
-    showViolations true
-
-    reports {
-        xml.enabled true
-        html.enabled true
-    }
-}
 
 task runKtlint(type: JavaExec) {
     main = "com.pinterest.ktlint.Main"
@@ -134,10 +118,13 @@ task formatKtlint(type: JavaExec) {
 }
 
 afterEvaluate {
-    preDebugBuild.dependsOn runCheckstyle, runKtlint
+    preDebugBuild.dependsOn  runKtlint
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.tensorflow:tensorflow-android:1.13.1"
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     implementation "frankiesardo:icepick:${icepickVersion}"
