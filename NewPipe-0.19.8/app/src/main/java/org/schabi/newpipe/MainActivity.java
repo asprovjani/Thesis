@@ -20,9 +20,11 @@
 
 package org.schabi.newpipe;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -51,8 +53,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -91,6 +96,8 @@ import static org.schabi.newpipe.util.Localization.assureCorrectAppLanguage;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     public static final boolean DEBUG = !BuildConfig.BUILD_TYPE.equals("release");
+
+    private static final int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 99;
 
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawer;
@@ -187,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
             FocusOverlayView.setupFocusObserver(this);
         }
 
+        //register BroadcastReceiver
         receiver = new UserContextReceiver();
         registerReceiver(receiver, new IntentFilter("USER_CONTEXT_ACTION"));
     }
@@ -195,6 +203,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        //Start and bing UserContextService
         Log.d(TAG, "Starting and binding UserContextService");
 
         Intent i = new Intent(this, UserContextService.class);
@@ -203,10 +212,13 @@ public class MainActivity extends AppCompatActivity {
         bindService(i, mConnection, 0);
     }
 
+
+
     @Override
     protected void onStop() {
         super.onStop();
 
+        //Stop UserContextService and unregister BroadcastReceiver
         if(isBound) {
             unbindService(mConnection);
             isBound = false;
@@ -520,6 +532,8 @@ public class MainActivity extends AppCompatActivity {
         if (!isChangingConfigurations()) {
             StateSaver.clearStateFiles();
         }
+
+        stopService(new Intent(this, UserContextService.class));
     }
 
     @Override
@@ -528,6 +542,18 @@ public class MainActivity extends AppCompatActivity {
         // Change the date format to match the selected language on resume
         Localization.init(getApplicationContext());
         super.onResume();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        //start UserSurveyActivity on first run
+        if(sharedPreferences.getBoolean("FIRST", true)) {
+            Log.d(TAG, "First run, start UserSurveyActivity");
+            startActivity(new Intent(this, UserSurveyActivity.class));
+        } else {
+            //check for Write Permission
+            checkWriteExternalPermission();
+        }
+
 
         // Close drawer on return, and don't show animation,
         // so it looks like the drawer isn't open when the user returns to MainActivity
@@ -546,7 +572,6 @@ public class MainActivity extends AppCompatActivity {
             ErrorActivity.reportUiError(this, e);
         }
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPreferences.getBoolean(Constants.KEY_THEME_CHANGE, false)) {
             if (DEBUG) {
                 Log.d(TAG, "Theme has changed, recreating activity...");
@@ -813,6 +838,44 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             ErrorActivity.reportUiError(this, e);
+        }
+    }
+
+    private boolean checkWriteExternalPermission() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            //Permission not granted
+            //Should we show explanation
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                new AlertDialog.Builder(this, R.style.FilePickerAlertDialogThemeDark)
+                        .setMessage("The application needs access to write to external storage " +
+                                "where it will store the data collected from this test")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                ActivityCompat.requestPermissions(MainActivity.this,
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                        WRITE_EXTERNAL_STORAGE_PERMISSION_CODE);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .create()
+                        .show();
+
+                return false;
+            }
+            else {
+                //No explanation needed, proceed to request permission
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        WRITE_EXTERNAL_STORAGE_PERMISSION_CODE);
+
+                return false;
+            }
+        }
+        else {
+            //Permission granted
+            return true;
         }
     }
 }

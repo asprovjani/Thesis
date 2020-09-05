@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserSurveyActivity">
+
+    <Button
+        android:id="@+id/buttonConfirm"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="20dp"
+        android:text="Confirm"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/glasses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="10dp"
+        android:text="@string/glasses_text"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/switch1" />
+
+    <Switch
+        android:id="@+id/switch1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="25dp"
+        android:checked="false"
+        android:showText="true"
+        android:textOff="NO"
+        android:textOn="YES"
+        app:layout_constraintBottom_toTopOf="@+id/radioGroupGender"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="25dp"
+        android:text="Gender"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switch1" />
+
+
+    <RadioGroup
+        android:id="@+id/radioGroupGender"
+        android:layout_width="162dp"
+        android:layout_height="29dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="25dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerAge"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <RadioButton
+            android:id="@+id/ButtonMale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Male"
+            android:textSize="14sp"
+            android:theme="@style/RadioButtonStyle"
+            tools:layout_editor_absoluteX="165dp"
+            tools:layout_editor_absoluteY="618dp" />
+
+        <RadioButton
+            android:id="@+id/ButtonFemale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15px"
+            android:text="Female"
+            android:textSize="14sp"
+            android:theme="@style/RadioButtonStyle" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="25dp"
+        android:text="Age"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/fieldOfStudy"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinnerAge" />
+
+    <TextView
+        android:id="@+id/fieldOfStudy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="25dp"
+        android:text="Field Of Study"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/spinnerFieldOfStudy" />
+
+    <Spinner
+        android:id="@+id/spinnerAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="25dp"
+        android:spinnerMode="dialog"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerFieldOfStudy"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinnerFieldOfStudy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="25dp"
+        android:entries="@array/field_of_study"
+        android:spinnerMode="dialog"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -26,6 +26,8 @@
         android:theme="@style/OpeningTheme"
         tools:ignore="AllowBackup">
 
+        <activity android:name=".UserSurveyActivity"></activity>
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
