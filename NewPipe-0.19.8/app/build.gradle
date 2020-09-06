@@ -124,6 +124,7 @@ afterEvaluate {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.tensorflow:tensorflow-android:1.13.1"
+    implementation 'com.opencsv:opencsv:4.6'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 

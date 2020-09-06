@@ -194,14 +194,15 @@ public class MainActivity extends AppCompatActivity {
             FocusOverlayView.setupFocusObserver(this);
         }
 
-        //register BroadcastReceiver
-        receiver = new UserContextReceiver();
-        registerReceiver(receiver, new IntentFilter("USER_CONTEXT_ACTION"));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        //register BroadcastReceiver
+        receiver = new UserContextReceiver();
+        registerReceiver(receiver, new IntentFilter("USER_CONTEXT_ACTION"));
 
         //Start and bing UserContextService
         Log.d(TAG, "Starting and binding UserContextService");
@@ -224,7 +225,11 @@ public class MainActivity extends AppCompatActivity {
             isBound = false;
         }
 
-        unregisterReceiver(receiver);
+        try {
+            unregisterReceiver(receiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupDrawer() throws Exception {
