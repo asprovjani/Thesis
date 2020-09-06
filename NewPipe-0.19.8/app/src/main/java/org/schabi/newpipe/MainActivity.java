@@ -863,7 +863,7 @@ public class MainActivity extends AppCompatActivity {
                                         WRITE_EXTERNAL_STORAGE_PERMISSION_CODE);
                             }
                         })
-                        .setNegativeButton("Cancel", null)
+                        .setCancelable(false)
                         .create()
                         .show();
 
