@@ -1,8 +1,10 @@
 package org.schabi.newpipe.services;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -12,8 +14,13 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.schabi.newpipe.MainActivity;
 import org.schabi.newpipe.classificator.HARClassifier;
+import org.schabi.newpipe.fragments.detail.VideoDetailFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,29 +60,33 @@ public class UserContextService extends Service implements SensorEventListener {
     private float[] results;
     private String[] labels = {"Biking", "Downstairs", "Jogging", "Sitting", "Standing", "Upstairs", "Walking"};
 
+    //BroadcastReceiver
+    VideoStreamResolutionsReceiver receiver;
+    String[] result;
+    class VideoStreamResolutionsReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("RESOLUTIONS_READY")) {
+                result = intent.getStringArrayExtra("RESOLUTIONS");
+                for(int i = 0; i < result.length; i++)
+                    Log.d(TAG, "onReceive: " + result[i]);
+            }
+        }
+    }
+
+    /*//////////////////////////////////////////////////////////////////////////
+    // Service LifeCycle
+    //////////////////////////////////////////////////////////////////////////*/
     @Override
     public void onCreate() {
         super.onCreate();
 
         Log.d(TAG, "Creating service");
 
-        ax = new ArrayList<>(); ay = new ArrayList<>(); az = new ArrayList<>();
-        lx = new ArrayList<>(); ly = new ArrayList<>(); lz = new ArrayList<>();
-        gx = new ArrayList<>(); gy = new ArrayList<>(); gz = new ArrayList<>();
-        ma = new ArrayList<>(); ml = new ArrayList<>(); mg = new ArrayList<>();
+        initClassifier();
+        receiver = new VideoStreamResolutionsReceiver();
+        registerReceiver(receiver, new IntentFilter("RESOLUTIONS_READY"));
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_FASTEST);
-
-        mLinearAcceleration = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        mSensorManager.registerListener(this, mLinearAcceleration , SensorManager.SENSOR_DELAY_FASTEST);
-
-        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        mSensorManager.registerListener(this, mGyroscope , SensorManager.SENSOR_DELAY_FASTEST);
-
-        classifier = new HARClassifier(getApplicationContext());
     }
 
     @Override
@@ -109,6 +120,20 @@ public class UserContextService extends Service implements SensorEventListener {
         return Service.START_STICKY;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        Log.d(TAG, "Destroying service");
+
+        try {
+            unregisterReceiver(receiver);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -117,13 +142,32 @@ public class UserContextService extends Service implements SensorEventListener {
         return this.serviceBinder;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+    /*//////////////////////////////////////////////////////////////////////////
+    // Init
+    //////////////////////////////////////////////////////////////////////////*/
+    private void initClassifier() {
+        ax = new ArrayList<>(); ay = new ArrayList<>(); az = new ArrayList<>();
+        lx = new ArrayList<>(); ly = new ArrayList<>(); lz = new ArrayList<>();
+        gx = new ArrayList<>(); gy = new ArrayList<>(); gz = new ArrayList<>();
+        ma = new ArrayList<>(); ml = new ArrayList<>(); mg = new ArrayList<>();
 
-        Log.d(TAG, "Destroying service");
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mSensorManager.registerListener(this, mAccelerometer , SensorManager.SENSOR_DELAY_FASTEST);
+
+        mLinearAcceleration = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        mSensorManager.registerListener(this, mLinearAcceleration , SensorManager.SENSOR_DELAY_FASTEST);
+
+        mGyroscope = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        mSensorManager.registerListener(this, mGyroscope , SensorManager.SENSOR_DELAY_FASTEST);
+
+        classifier = new HARClassifier(getApplicationContext());
     }
 
+    /*//////////////////////////////////////////////////////////////////////////
+    // Sensors callbacks
+    //////////////////////////////////////////////////////////////////////////*/
     @Override
     public void onSensorChanged(SensorEvent event) {
         activityPrediction();
@@ -151,6 +195,9 @@ public class UserContextService extends Service implements SensorEventListener {
 
     }
 
+    /*//////////////////////////////////////////////////////////////////////////
+    // Utils
+    //////////////////////////////////////////////////////////////////////////*/
     private void activityPrediction() {
         List<Float> data = new ArrayList<>();
 

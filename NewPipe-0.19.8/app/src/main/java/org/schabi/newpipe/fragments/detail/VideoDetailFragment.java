@@ -729,6 +729,7 @@ public class VideoDetailFragment extends BaseStateFragment<StreamInfo>
 
         sortedVideoStreams = ListHelper.getSortedStreamVideosList(activity, info.getVideoStreams(),
                 info.getVideoOnlyStreams(), false);
+        sendResolutionsBroadcast(sortedVideoStreams);
         selectedVideoStreamIndex = ListHelper
                 .getDefaultResolutionIndex(activity, sortedVideoStreams);
 
@@ -747,6 +748,18 @@ public class VideoDetailFragment extends BaseStateFragment<StreamInfo>
             @Override
             public void onNothingSelected(final AdapterView<?> parent) { }
         });
+    }
+
+    //send Broadcast to UserContextService upon retrieving available resolutions for selected video
+    private void sendResolutionsBroadcast(List<VideoStream> resolutions) {
+        Intent result = new Intent();
+        result.setAction("RESOLUTIONS_READY");
+        String[] data = new String[resolutions.size()];
+        for(int i = 0; i < resolutions.size(); i++)
+            data[i] = resolutions.get((resolutions.size() - 1) - i).resolution;
+
+        result.putExtra("RESOLUTIONS", data);
+        getActivity().sendBroadcast(result);
     }
 
     /*//////////////////////////////////////////////////////////////////////////
