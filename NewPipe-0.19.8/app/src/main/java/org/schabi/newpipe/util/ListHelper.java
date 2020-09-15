@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -119,8 +120,10 @@ public final class ListHelper {
                                                               final boolean ascendingOrder) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        boolean showHigherResolutions = preferences.getBoolean(
-                context.getString(R.string.show_higher_resolutions_key), false);
+        //boolean showHigherResolutions = preferences.getBoolean(
+        //        context.getString(R.string.show_higher_resolutions_key), false);
+        // don't show resolutions above 1080p
+        boolean showHigherResolutions = false;
         MediaFormat defaultFormat = getDefaultFormat(context, R.string.default_video_format_key,
                 R.string.default_video_format_value);
 
@@ -209,6 +212,11 @@ public final class ListHelper {
                         && HIGH_RESOLUTION_LIST.contains(stream.getResolution())) {
                     continue;
                 }
+
+                //we don't want 144p and 240p resolutions
+                if(stream.getResolution().equals("144p") || stream.getResolution().equals("240p"))
+                    continue;
+
                 retList.add(stream);
             }
         }
@@ -218,6 +226,11 @@ public final class ListHelper {
                         && HIGH_RESOLUTION_LIST.contains(stream.getResolution())) {
                     continue;
                 }
+
+                //we don't want 144p and 240p resolutions
+                if(stream.getResolution().equals("144p") || stream.getResolution().equals("240p"))
+                    continue;
+
                 retList.add(stream);
             }
         }
