@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int ORDER = 0;
 
     //service
+    /*
     private UserContextService userContextService;
     private boolean isBound;
 
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
     private void showMessage(String message) {
         Toast.makeText(this, result, Toast.LENGTH_LONG).show();
     }
-
+    */
     /*//////////////////////////////////////////////////////////////////////////
     // Activity's LifeCycle
     //////////////////////////////////////////////////////////////////////////*/
@@ -201,6 +202,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         //register BroadcastReceiver
+        /*
         receiver = new UserContextReceiver();
         registerReceiver(receiver, new IntentFilter("USER_CONTEXT_ACTION"));
 
@@ -211,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
         startService(i);
 
         bindService(i, mConnection, 0);
+         */
     }
 
 
@@ -220,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
 
         //Stop UserContextService and unregister BroadcastReceiver
+        /*
         if(isBound) {
             unbindService(mConnection);
             isBound = false;
@@ -230,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+         */
     }
 
     private void setupDrawer() throws Exception {
@@ -538,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
             StateSaver.clearStateFiles();
         }
 
-        stopService(new Intent(this, UserContextService.class));
+        //stopService(new Intent(this, UserContextService.class));
     }
 
     @Override

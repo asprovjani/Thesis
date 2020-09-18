@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.PreferenceManager;
 
 import com.opencsv.CSVWriter;
 
@@ -76,7 +78,7 @@ public class UserContextService extends Service implements SensorEventListener {
                         Log.d(TAG, "onReceive: " + result[i]);
                     break;
                 
-                case "VIDEO_START":
+                case "STREAM_INFO":
                     String title = intent.getStringExtra("TITLE");
                     String quality = intent.getStringExtra("QUALITY");
                     try {
@@ -99,7 +101,7 @@ public class UserContextService extends Service implements SensorEventListener {
 
         initClassifier();
         registerReceiver(bReceiver, new IntentFilter("RESOLUTIONS_READY"));
-        registerReceiver(bReceiver, new IntentFilter("VIDEO_START"));
+        registerReceiver(bReceiver, new IntentFilter("STREAM_INFO"));
 
     }
 
@@ -112,8 +114,8 @@ public class UserContextService extends Service implements SensorEventListener {
             @Override
             public void run() {
                 String userContext = getUserContext();
-                if(!userContext.equals(""))
-                    sendContextToActivity(userContext);
+                //if(!userContext.equals(""))
+                //    sendContextToActivity(userContext);
             }
         }, 1000, 3000);
 
@@ -288,6 +290,8 @@ public class UserContextService extends Service implements SensorEventListener {
         File f = new File(path);
         CSVWriter w;
 
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         if(f.exists() && !f.isDirectory()) {
             FileWriter fWriter = new FileWriter(path, true);
             w = new CSVWriter(fWriter);
@@ -295,7 +299,12 @@ public class UserContextService extends Service implements SensorEventListener {
             String[] keys = {"VIDEO_TITLE", "RESOLUTION", "USER_ACTIVITY"};
             String[] values = {title, quality, getUserContext()};
 
-            w.writeNext(keys);
+            if(sharedPreferences.getBoolean("firstWrite", true)) {
+                w.writeNext(keys);
+                SharedPreferences.Editor preferencesEdit = sharedPreferences.edit();
+                preferencesEdit.putBoolean("firstWrite", false);
+                preferencesEdit.apply();
+            }
             w.writeNext(values);
             w.close();
         }

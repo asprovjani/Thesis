@@ -20,8 +20,10 @@
 
 package org.schabi.newpipe.player;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -33,6 +35,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -81,6 +84,7 @@ import org.schabi.newpipe.player.playqueue.PlayQueueItemHolder;
 import org.schabi.newpipe.player.playqueue.PlayQueueItemTouchCallback;
 import org.schabi.newpipe.player.resolver.MediaSourceTag;
 import org.schabi.newpipe.player.resolver.VideoPlaybackResolver;
+import org.schabi.newpipe.services.UserContextService;
 import org.schabi.newpipe.util.AndroidTvUtils;
 import org.schabi.newpipe.util.AnimationUtils;
 import org.schabi.newpipe.util.KoreUtil;
@@ -132,6 +136,27 @@ public final class MainVideoPlayer extends AppCompatActivity
     private boolean isBackPressed;
 
     private ContentObserver rotationObserver;
+
+    //service
+    private UserContextService userContextService;
+    private boolean isBound;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "Service bound");
+
+            UserContextService.RunServiceBinder binder = (UserContextService.RunServiceBinder) service;
+            userContextService = binder.getService();
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "Service disconnect");
+            isBound = false;
+        }
+    };
 
     /*//////////////////////////////////////////////////////////////////////////
     // Activity LifeCycle
@@ -202,6 +227,14 @@ public final class MainVideoPlayer extends AppCompatActivity
         if (AndroidTvUtils.isTv(this)) {
             FocusOverlayView.setupFocusObserver(this);
         }
+
+        //Start and bing UserContextService
+        Log.d(TAG, "Starting and binding UserContextService");
+
+        Intent i = new Intent(this, UserContextService.class);
+        startService(i);
+
+        bindService(i, mConnection, 0);
     }
 
     @Override
@@ -368,6 +401,13 @@ public final class MainVideoPlayer extends AppCompatActivity
 
         isInMultiWindow = false;
         isBackPressed = false;
+
+        //Stop UserContextService
+        stopService(new Intent(this, UserContextService.class));
+        if(isBound) {
+            unbindService(mConnection);
+            isBound = false;
+        }
     }
 
     @Override
@@ -1067,7 +1107,7 @@ public final class MainVideoPlayer extends AppCompatActivity
         //sendBroadcast to UserContextService when video starts playing
         private void sendStreamDataToService(String title, String quality) {
             Intent intent = new Intent();
-            intent.setAction("VIDEO_START");
+            intent.setAction("STREAM_INFO");
             intent.putExtra("TITLE", title);
             intent.putExtra("QUALITY", quality);
             sendBroadcast(intent);
