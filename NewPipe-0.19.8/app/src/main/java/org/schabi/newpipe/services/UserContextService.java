@@ -67,6 +67,8 @@ public class UserContextService extends Service implements SensorEventListener {
     private float[] results;
     private String[] labels = {"Biking", "Downstairs", "Jogging", "Sitting", "Standing", "Upstairs", "Walking"};
 
+    String prevTitle = "";
+    String prevQuality = "";
     //BroadcastReceiver
     BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
@@ -82,7 +84,17 @@ public class UserContextService extends Service implements SensorEventListener {
                     String title = intent.getStringExtra("TITLE");
                     String quality = intent.getStringExtra("QUALITY");
                     try {
-                        saveToFile(title, quality);
+                        if(prevTitle.equals("") && prevQuality.equals("")) {
+                            saveToFile(title, quality);
+                            prevTitle = title;
+                            prevQuality = quality;
+                        }
+                        else if(!prevTitle.equals(title) || !prevQuality.equals(quality)) {
+                            saveToFile(title, quality);
+                            prevTitle = title;
+                            prevQuality = quality;
+                        }
+
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

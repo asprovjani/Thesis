@@ -283,12 +283,25 @@ public abstract class VideoPlayer extends BasePlayer
         if (qualityPopupMenu == null) {
             return;
         }
-
+        //adjust qualityPopupMenu to show one resolution at a time
+        //instead of a list of all available resolutions
         qualityPopupMenu.getMenu().removeGroup(qualityPopupMenuGroupId);
         for (int i = 0; i < availableStreams.size(); i++) {
             VideoStream videoStream = availableStreams.get(i);
-            qualityPopupMenu.getMenu().add(qualityPopupMenuGroupId, i, Menu.NONE, MediaFormat
-                    .getNameById(videoStream.getFormatId()) + " " + videoStream.resolution);
+            if(videoStream.getResolution().equals(getSelectedVideoStream().resolution)) {
+                if(i != 0) {
+                    qualityPopupMenu.getMenu().add(qualityPopupMenuGroupId, i - 1, Menu.NONE,
+                            MediaFormat.getNameById(videoStream.getFormatId()) + " " +
+                                 availableStreams.get(i - 1).resolution);
+                }
+                else {
+                    qualityPopupMenu.getMenu().add(qualityPopupMenuGroupId, i, Menu.NONE,
+                            MediaFormat.getNameById(videoStream.getFormatId()) + " " + videoStream.resolution);
+                }
+                break;
+            }
+            //qualityPopupMenu.getMenu().add(qualityPopupMenuGroupId, i, Menu.NONE, MediaFormat
+            //        .getNameById(videoStream.getFormatId()) + " " + videoStream.resolution);
         }
         if (getSelectedVideoStream() != null) {
             qualityTextView.setText(getSelectedVideoStream().resolution);
