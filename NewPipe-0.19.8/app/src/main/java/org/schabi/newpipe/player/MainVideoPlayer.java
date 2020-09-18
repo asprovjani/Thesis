@@ -68,6 +68,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.text.CaptionStyleCompat;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SubtitleView;
+import com.opencsv.CSVWriter;
 
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.extractor.stream.VideoStream;
@@ -91,6 +92,9 @@ import org.schabi.newpipe.util.StateSaver;
 import org.schabi.newpipe.util.ThemeHelper;
 import org.schabi.newpipe.views.FocusOverlayView;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
 import java.util.UUID;
@@ -165,7 +169,11 @@ public final class MainVideoPlayer extends AppCompatActivity
 
         final Intent intent = getIntent();
         if (intent != null) {
-            playerImpl.handleIntent(intent);
+            try {
+                playerImpl.handleIntent(intent);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             Toast.makeText(this, R.string.general_error, Toast.LENGTH_SHORT).show();
             finish();
@@ -213,7 +221,11 @@ public final class MainVideoPlayer extends AppCompatActivity
         super.onNewIntent(intent);
         if (intent != null) {
             playerState = null;
-            playerImpl.handleIntent(intent);
+            try {
+                playerImpl.handleIntent(intent);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -718,6 +730,7 @@ public final class MainVideoPlayer extends AppCompatActivity
 
             titleTextView.setText(tag.getMetadata().getName());
             channelTextView.setText(tag.getMetadata().getUploaderName());
+            sendStreamDataToService((String) titleTextView.getText(), (String) playerImpl.getQualityTextView().getText());
         }
 
         @Override
@@ -1050,6 +1063,15 @@ public final class MainVideoPlayer extends AppCompatActivity
         /*//////////////////////////////////////////////////////////////////////////
         // Utils
         //////////////////////////////////////////////////////////////////////////*/
+
+        //sendBroadcast to UserContextService when video starts playing
+        private void sendStreamDataToService(String title, String quality) {
+            Intent intent = new Intent();
+            intent.setAction("VIDEO_START");
+            intent.putExtra("TITLE", title);
+            intent.putExtra("QUALITY", quality);
+            sendBroadcast(intent);
+        }
 
         private void setInitialGestureValues() {
             if (getAudioReactor() != null) {

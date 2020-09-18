@@ -18,10 +18,15 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.opencsv.CSVWriter;
+
 import org.schabi.newpipe.MainActivity;
 import org.schabi.newpipe.classificator.HARClassifier;
 import org.schabi.newpipe.fragments.detail.VideoDetailFragment;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -61,18 +66,27 @@ public class UserContextService extends Service implements SensorEventListener {
     private String[] labels = {"Biking", "Downstairs", "Jogging", "Sitting", "Standing", "Upstairs", "Walking"};
 
     //BroadcastReceiver
-    VideoStreamResolutionsReceiver receiver;
-    String[] result;
-    class VideoStreamResolutionsReceiver extends BroadcastReceiver {
+    BroadcastReceiver bReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals("RESOLUTIONS_READY")) {
-                result = intent.getStringArrayExtra("RESOLUTIONS");
-                for(int i = 0; i < result.length; i++)
-                    Log.d(TAG, "onReceive: " + result[i]);
+            switch (intent.getAction()) {
+                case "RESOLUTIONS_READY":
+                    String[] result = intent.getStringArrayExtra("RESOLUTIONS");
+                    for(int i = 0; i < result.length; i++)
+                        Log.d(TAG, "onReceive: " + result[i]);
+                    break;
+                
+                case "VIDEO_START":
+                    String title = intent.getStringExtra("TITLE");
+                    String quality = intent.getStringExtra("QUALITY");
+                    try {
+                        saveToFile(title, quality);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
             }
         }
-    }
+    };
 
     /*//////////////////////////////////////////////////////////////////////////
     // Service LifeCycle
@@ -84,8 +98,8 @@ public class UserContextService extends Service implements SensorEventListener {
         Log.d(TAG, "Creating service");
 
         initClassifier();
-        receiver = new VideoStreamResolutionsReceiver();
-        registerReceiver(receiver, new IntentFilter("RESOLUTIONS_READY"));
+        registerReceiver(bReceiver, new IntentFilter("RESOLUTIONS_READY"));
+        registerReceiver(bReceiver, new IntentFilter("VIDEO_START"));
 
     }
 
@@ -97,23 +111,9 @@ public class UserContextService extends Service implements SensorEventListener {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (results == null || results.length == 0) {
-                    return;
-                }
-                float max = -1;
-                int idx = -1;
-                for (int i = 0; i < results.length; i++) {
-                    if (results[i] > max) {
-                        idx = i;
-                        max = results[i];
-                    }
-                }
-
-                if (max > 0.50 && idx != prevIdx) {
-                    Log.d(TAG, "User state: " + labels[idx]);
-                    sendContextToActivity(labels[idx]);
-                    prevIdx = idx;
-                }
+                String userContext = getUserContext();
+                if(!userContext.equals(""))
+                    sendContextToActivity(userContext);
             }
         }, 1000, 3000);
 
@@ -127,7 +127,7 @@ public class UserContextService extends Service implements SensorEventListener {
         Log.d(TAG, "Destroying service");
 
         try {
-            unregisterReceiver(receiver);
+            unregisterReceiver(bReceiver);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -259,6 +259,46 @@ public class UserContextService extends Service implements SensorEventListener {
             array[i++] = (f != null ? f : Float.NaN);
         }
         return array;
+    }
+
+    private String getUserContext() {
+        if (results == null || results.length == 0) {
+            return "";
+        }
+        float max = -1;
+        int idx = -1;
+        for (int i = 0; i < results.length; i++) {
+            if (results[i] > max) {
+                idx = i;
+                max = results[i];
+            }
+        }
+
+        if (max > 0.50 && idx != prevIdx) {
+            Log.d(TAG, "User state: " + labels[idx]);
+            prevIdx = idx;
+        }
+        return labels[idx];
+    }
+
+    private void saveToFile(String title, String quality) throws IOException {
+        String dir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
+        String fileName = "UserData.csv";
+        String path = dir + File.separator + fileName;
+        File f = new File(path);
+        CSVWriter w;
+
+        if(f.exists() && !f.isDirectory()) {
+            FileWriter fWriter = new FileWriter(path, true);
+            w = new CSVWriter(fWriter);
+
+            String[] keys = {"VIDEO_TITLE", "RESOLUTION", "USER_ACTIVITY"};
+            String[] values = {title, quality, getUserContext()};
+
+            w.writeNext(keys);
+            w.writeNext(values);
+            w.close();
+        }
     }
 
     private void sendContextToActivity(String context) {

@@ -750,7 +750,7 @@ public class VideoDetailFragment extends BaseStateFragment<StreamInfo>
         });
 
         //hide spinnerToolbar, since starting resolution is always 360p
-        spinnerToolbar.setVisibility(View.INVISIBLE);
+        //spinnerToolbar.setVisibility(View.INVISIBLE);
     }
 
     //send Broadcast to UserContextService upon retrieving available resolutions for selected video

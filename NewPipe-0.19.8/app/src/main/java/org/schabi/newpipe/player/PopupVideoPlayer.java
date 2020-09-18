@@ -75,6 +75,7 @@ import org.schabi.newpipe.util.ListHelper;
 import org.schabi.newpipe.util.NavigationHelper;
 import org.schabi.newpipe.util.ThemeHelper;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.schabi.newpipe.player.BasePlayer.STATE_PLAYING;
@@ -167,7 +168,11 @@ public final class PopupVideoPlayer extends Service {
             initPopupCloseOverlay();
         }
 
-        playerImpl.handleIntent(intent);
+        try {
+            playerImpl.handleIntent(intent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return START_NOT_STICKY;
     }
@@ -576,7 +581,7 @@ public final class PopupVideoPlayer extends Service {
         }
 
         @Override
-        public void handleIntent(final Intent intent) {
+        public void handleIntent(final Intent intent) throws IOException {
             super.handleIntent(intent);
 
             resetNotification();

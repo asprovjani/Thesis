@@ -56,6 +56,8 @@ import org.schabi.newpipe.util.BitmapUtils;
 import org.schabi.newpipe.util.NavigationHelper;
 import org.schabi.newpipe.util.ThemeHelper;
 
+import java.io.IOException;
+
 import static org.schabi.newpipe.player.helper.PlayerHelper.getTimeString;
 import static org.schabi.newpipe.util.Localization.assureCorrectAppLanguage;
 
@@ -130,7 +132,11 @@ public final class BackgroundPlayer extends Service {
             Log.d(TAG, "onStartCommand() called with: intent = [" + intent + "], "
                     + "flags = [" + flags + "], startId = [" + startId + "]");
         }
-        basePlayerImpl.handleIntent(intent);
+        try {
+            basePlayerImpl.handleIntent(intent);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (basePlayerImpl.mediaSessionManager != null) {
             basePlayerImpl.mediaSessionManager.handleMediaButtonIntent(intent);
         }
@@ -365,7 +371,7 @@ public final class BackgroundPlayer extends Service {
         }
 
         @Override
-        public void handleIntent(final Intent intent) {
+        public void handleIntent(final Intent intent) throws IOException {
             super.handleIntent(intent);
 
             resetNotification();

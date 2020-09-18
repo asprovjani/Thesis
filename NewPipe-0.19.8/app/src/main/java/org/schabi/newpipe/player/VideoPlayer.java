@@ -59,6 +59,7 @@ import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SubtitleView;
 import com.google.android.exoplayer2.video.VideoListener;
+import com.opencsv.CSVWriter;
 
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.extractor.MediaFormat;
@@ -70,6 +71,9 @@ import org.schabi.newpipe.player.resolver.MediaSourceTag;
 import org.schabi.newpipe.player.resolver.VideoPlaybackResolver;
 import org.schabi.newpipe.util.AnimationUtils;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -259,7 +263,7 @@ public abstract class VideoPlayer extends BasePlayer
     }
 
     @Override
-    public void handleIntent(final Intent intent) {
+    public void handleIntent(final Intent intent) throws IOException {
         if (intent == null) {
             return;
         }
@@ -763,7 +767,8 @@ public abstract class VideoPlayer extends BasePlayer
         }
     }
 
-    public void onQualitySelectorClicked() {
+    public void
+    onQualitySelectorClicked() {
         if (DEBUG) {
             Log.d(TAG, "onQualitySelectorClicked() called");
         }

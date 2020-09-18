@@ -140,6 +140,7 @@ public final class ListHelper {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Load the prefered resolution otherwise the best available
+        /*
         String resolution = preferences != null
                 ? preferences.getString(context.getString(key), context.getString(value))
                 : context.getString(R.string.best_resolution_key);
@@ -150,6 +151,10 @@ public final class ListHelper {
                 || compareVideoStreamResolution(maxResolution, resolution) < 1)) {
             resolution = maxResolution;
         }
+        */
+        // Set default resolution to 360p
+        String resolution = context.getString(value);
+
         return resolution;
     }
 

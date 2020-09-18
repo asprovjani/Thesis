@@ -160,7 +160,7 @@ public class UserSurveyActivity extends AppCompatActivity {
             w = new CSVWriter(new FileWriter(path));
         }
 
-        String[] keys = {"GENDER", "AGE", "GLASSES", "FIELD OF STUDY"};
+        String[] keys = {"GENDER", "AGE", "GLASSES", "FIELD_OF_STUDY"};
         String[] values = {gender,   age,   glasses,   fieldOfStudy};
         w.writeNext(keys);
         w.writeNext(values);

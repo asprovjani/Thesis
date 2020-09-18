@@ -252,7 +252,7 @@ public abstract class BasePlayer implements
 
     public void initListeners() { }
 
-    public void handleIntent(final Intent intent) {
+    public void handleIntent(final Intent intent) throws IOException {
         if (DEBUG) {
             Log.d(TAG, "handleIntent() called with: intent = [" + intent + "]");
         }
