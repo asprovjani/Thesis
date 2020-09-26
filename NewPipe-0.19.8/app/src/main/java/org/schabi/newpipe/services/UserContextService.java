@@ -120,7 +120,7 @@ public class UserContextService extends Service implements SensorEventListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Starting service");
-
+        /*
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -129,7 +129,7 @@ public class UserContextService extends Service implements SensorEventListener {
                 //if(!userContext.equals(""))
                 //    sendContextToActivity(userContext);
             }
-        }, 1000, 3000);
+        }, 1000, 3000); */
 
         return Service.START_STICKY;
     }
@@ -308,8 +308,11 @@ public class UserContextService extends Service implements SensorEventListener {
             FileWriter fWriter = new FileWriter(path, true);
             w = new CSVWriter(fWriter);
 
-            String[] keys = {"VIDEO_TITLE", "RESOLUTION", "USER_ACTIVITY"};
-            String[] values = {title, quality, getUserContext()};
+            //add activity later
+            //String[] keys = {"VIDEO_TITLE", "RESOLUTION", "USER_ACTIVITY"};
+            //String[] values = {title, quality, getUserContext()};
+            String[] keys = {"VIDEO_TITLE", "RESOLUTION"};
+            String[] values = {title, quality};
 
             if(sharedPreferences.getBoolean("firstWrite", true)) {
                 w.writeNext(keys);
