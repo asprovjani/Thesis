@@ -448,8 +448,9 @@ public final class ListHelper {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         String defaultFormat = context.getString(defaultFormatValueKey);
-        String defaultFormatString = preferences.getString(
-                context.getString(defaultFormatKey), defaultFormat);
+        String defaultFormatString = defaultFormat;
+        //String defaultFormatString = preferences.getString(
+        //        context.getString(defaultFormatKey), defaultFormat);
 
         MediaFormat defaultMediaFormat = getMediaFormatFromKey(context, defaultFormatString);
         if (defaultMediaFormat == null) {
