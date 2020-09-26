@@ -234,8 +234,10 @@ public final class ListHelper {
                     continue;
                 }
 
-                //we don't want 144p and 240p resolutions
-                if(stream.getResolution().equals("144p") || stream.getResolution().equals("240p"))
+                //we don't want 144p, 240p, 720p60 and 1080p60 resolutions
+                String resolution = stream.getResolution();
+                if(resolution.equals("144p") || resolution.equals("240p") ||
+                        resolution.equals("720p60") || resolution.equals("1080p60"))
                     continue;
 
                 retList.add(stream);
