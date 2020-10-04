@@ -2,6 +2,7 @@ package org.schabi.newpipe.local.bookmark;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.Service;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -23,13 +24,19 @@ import org.schabi.newpipe.database.LocalItem;
 import org.schabi.newpipe.database.playlist.PlaylistLocalItem;
 import org.schabi.newpipe.database.playlist.PlaylistMetadataEntry;
 import org.schabi.newpipe.database.playlist.model.PlaylistRemoteEntity;
+import org.schabi.newpipe.extractor.StreamingService;
+import org.schabi.newpipe.extractor.exceptions.ExtractionException;
+import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
+import org.schabi.newpipe.extractor.playlist.PlaylistInfo;
 import org.schabi.newpipe.local.BaseLocalListFragment;
 import org.schabi.newpipe.local.playlist.LocalPlaylistManager;
 import org.schabi.newpipe.local.playlist.RemotePlaylistManager;
 import org.schabi.newpipe.report.UserAction;
+import org.schabi.newpipe.util.ExtractorHelper;
 import org.schabi.newpipe.util.NavigationHelper;
 import org.schabi.newpipe.util.OnClickGesture;
 
+import java.io.IOException;
 import java.util.List;
 
 import icepick.State;
