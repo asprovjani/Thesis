@@ -612,7 +612,8 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.enable_watch_history_key), true);
         drawerItems.getMenu().findItem(ITEM_ID_HISTORY).setVisible(isHistoryEnabled);
 
-        NavigationHelper.openPlaylistFragment(getSupportFragmentManager(), 0, "https://www.youtube.com/playlist?list=PLAuI8VOXZ4OCbkP0YMsKPv0z9EOaiG11i", null);
+        //NavigationHelper.openPlaylistFragment(getSupportFragmentManager(), 0, "https://www.youtube.com/playlist?list=PLAuI8VOXZ4OCbkP0YMsKPv0z9EOaiG11i", null);
+        //NavigationHelper.openDownloads(this);
     }
 
     @Override

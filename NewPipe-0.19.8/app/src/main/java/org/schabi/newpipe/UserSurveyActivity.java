@@ -25,6 +25,9 @@ import android.widget.Toast;
 
 import com.opencsv.CSVWriter;
 
+import org.schabi.newpipe.player.local.LocalVideoPlayer;
+import org.schabi.newpipe.player.local.VideosListActivity;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -34,7 +37,7 @@ import java.util.ArrayList;
 
 public class UserSurveyActivity extends AppCompatActivity {
     private static final String TAG = "UserSurveyActivity";
-    public final int WRITE_EXTERNAL_STORAGE_PERMISSION_CODE = 99;
+    public final int EXTERNAL_STORAGE_PERMISSION_CODE = 99;
 
     Spinner spinnerAge, spinnerFieldOfStudy;
     Switch glassesSwitch;
@@ -66,7 +69,7 @@ public class UserSurveyActivity extends AppCompatActivity {
                 //check if gender is selected
                 if(genderSelected()) {
                     //check for write external permission
-                    if(checkWriteExternalPermission()) {
+                    if(checkPermissions()) {
                         try {
                             saveUserDataToFile();
                             startMainActivity();
@@ -102,7 +105,7 @@ public class UserSurveyActivity extends AppCompatActivity {
                     .setTitle("Information for the user")
                     .setMessage("This application uses user context information(standing, walking, running...)" +
                             " to determine the optimal resolution for the video playback." +
-                            " For the purposes of this research it needs permission to write to external memory" +
+                            " For the purposes of this research it needs permission to external memory" +
                             " when you change the playback resolution manually.")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
@@ -118,13 +121,13 @@ public class UserSurveyActivity extends AppCompatActivity {
             informationDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    checkWriteExternalPermission();
+                    checkPermissions();
                 }
             });
             informationDialog.show();
         }
         else {
-            checkWriteExternalPermission();
+            checkPermissions();
         }
     }
 
@@ -174,24 +177,27 @@ public class UserSurveyActivity extends AppCompatActivity {
         preferencesEdit.putBoolean("FIRST", false);
         preferencesEdit.apply();
 
-        startActivity(new Intent(this, MainActivity.class));
+        //startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, VideosListActivity.class));
     }
 
-    private boolean checkWriteExternalPermission() {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+    private boolean checkPermissions() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             //Permission not granted
             //Should we show explanation
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) ) {
                 new AlertDialog.Builder(this, R.style.FilePickerAlertDialogThemeDark)
-                        .setMessage("The application needs access to write to external storage " +
-                                "where it will store the data collected from this test")
+                        .setMessage("The application needs access to external storage " +
+                                "where it will store the data collected from this test " +
+                                "and load the needed videos.")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 ActivityCompat.requestPermissions(UserSurveyActivity.this,
-                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                        WRITE_EXTERNAL_STORAGE_PERMISSION_CODE);
+                                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                                        EXTERNAL_STORAGE_PERMISSION_CODE);
                             }
                         })
                         .setNegativeButton("Cancel", null)
@@ -203,8 +209,8 @@ public class UserSurveyActivity extends AppCompatActivity {
             else {
                 //No explanation needed, proceed to request permission
                 ActivityCompat.requestPermissions(UserSurveyActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        WRITE_EXTERNAL_STORAGE_PERMISSION_CODE);
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
+                        EXTERNAL_STORAGE_PERMISSION_CODE);
 
                 return false;
             }
@@ -218,12 +224,13 @@ public class UserSurveyActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch(requestCode) {
-            case WRITE_EXTERNAL_STORAGE_PERMISSION_CODE:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Write external permission granted.");
+            case EXTERNAL_STORAGE_PERMISSION_CODE:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "External storage permission granted.");
                 }
                 else {
-                    Log.d(TAG, "Write external permission denied.");
+                    Log.d(TAG, "External storage permission denied.");
                 }
                 break;
         }

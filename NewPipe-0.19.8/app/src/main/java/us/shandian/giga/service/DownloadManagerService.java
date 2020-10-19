@@ -19,6 +19,7 @@ import android.net.NetworkRequest;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.IBinder;
@@ -544,7 +545,14 @@ public class DownloadManagerService extends Service {
     }
 
     private StoredDirectoryHelper loadMainStorage(@StringRes int prefKey, String tag) {
-        String path = mPrefs.getString(getString(prefKey), null);
+        String path = null;
+
+        if(prefKey == R.string.download_path_video_key) {
+            path = "file:" + Environment.getExternalStorageDirectory() + File.separator + "Movies";
+            Log.d(TAG, "loadMainStorage: " + Environment.getExternalStorageDirectory() + File.separator + "Movies");
+        } else {
+            path = mPrefs.getString(getString(prefKey), null);
+        }
 
         if (path == null || path.isEmpty()) return null;
 

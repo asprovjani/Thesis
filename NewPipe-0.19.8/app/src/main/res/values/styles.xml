@@ -335,4 +335,11 @@
     </style>
 
     <style name="VideoPlayerTheme" />
+
+    <style name="AppThemeFullscreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:fitsSystemWindows">false</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>

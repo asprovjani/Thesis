@@ -41,6 +41,7 @@ import com.google.android.material.snackbar.Snackbar;
 import org.schabi.newpipe.BuildConfig;
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.extractor.NewPipe;
+import org.schabi.newpipe.player.MainVideoPlayer;
 import org.schabi.newpipe.report.ErrorActivity;
 import org.schabi.newpipe.report.UserAction;
 import org.schabi.newpipe.util.NavigationHelper;
@@ -344,6 +345,7 @@ public class MissionAdapter extends Adapter<ViewHolder> implements Handler.Callb
         Uri uri = resolveShareableUri(mission);
 
         Intent intent = new Intent();
+        //Intent intent = new Intent(mContext.getApplicationContext(), MainVideoPlayer.class);
         intent.setAction(Intent.ACTION_VIEW);
         intent.setDataAndType(uri, mimeType);
         intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION);
@@ -356,12 +358,13 @@ public class MissionAdapter extends Adapter<ViewHolder> implements Handler.Callb
         }
 
         //mContext.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-
+        
         if (intent.resolveActivity(mContext.getPackageManager()) != null) {
             mContext.startActivity(intent);
         } else {
             Toast.makeText(mContext, R.string.toast_no_player, Toast.LENGTH_LONG).show();
         }
+        //mContext.startActivity(intent);
     }
 
     private void shareFile(Mission mission) {

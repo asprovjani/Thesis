@@ -194,6 +194,9 @@ public final class MainVideoPlayer extends AppCompatActivity
 
         final Intent intent = getIntent();
         if (intent != null) {
+            String action = intent.getAction();
+            Log.d(TAG, "ACTION: " + action);
+            //TODO: ADD LOGIC TO HANDLE ACTION.VIEW AND PLAY LOCAL VIDEO
             try {
                 playerImpl.handleIntent(intent);
             } catch (IOException e) {

@@ -2,7 +2,9 @@ package org.schabi.newpipe.download;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,6 +19,10 @@ import org.schabi.newpipe.util.AndroidTvUtils;
 import org.schabi.newpipe.util.ThemeHelper;
 import org.schabi.newpipe.views.FocusOverlayView;
 
+import java.io.File;
+import java.io.IOException;
+
+import us.shandian.giga.io.StoredDirectoryHelper;
 import us.shandian.giga.service.DownloadManagerService;
 import us.shandian.giga.ui.fragment.MissionsFragment;
 
