@@ -39,10 +39,9 @@ public class UserSurveyActivity extends AppCompatActivity {
     private static final String TAG = "UserSurveyActivity";
     public final int EXTERNAL_STORAGE_PERMISSION_CODE = 99;
 
-    Spinner spinnerAge, spinnerFieldOfStudy;
-    Switch glassesSwitch;
-    RadioGroup genderRadioGroup;
-    RadioButton radioButtonMale, radioButtonFemale;
+    Spinner spinnerAge;
+    RadioGroup genderRadioGroup, glassesRadioGroup;
+    RadioButton radioButtonMale, radioButtonFemale, radioButtonYes, radioButtonNo;
     Button confirmBtn;
 
     /*//////////////////////////////////////////////////////////////////////////
@@ -56,18 +55,19 @@ public class UserSurveyActivity extends AppCompatActivity {
 
         //initialize layout elements
         spinnerAge = (Spinner) findViewById(R.id.spinnerAge);
-        spinnerFieldOfStudy = (Spinner) findViewById(R.id.spinnerFieldOfStudy);
-        glassesSwitch = (Switch) findViewById(R.id.switch1);
         genderRadioGroup = (RadioGroup) findViewById(R.id.radioGroupGender);
+        glassesRadioGroup = (RadioGroup) findViewById(R.id.radioGroupGlasses);
         radioButtonMale = (RadioButton) findViewById(R.id.ButtonMale);
         radioButtonFemale = (RadioButton) findViewById(R.id.ButtonFemale);
+        radioButtonYes = (RadioButton) findViewById(R.id.ButtonYes);
+        radioButtonNo = (RadioButton) findViewById(R.id.ButtonNo);
         confirmBtn = (Button) findViewById(R.id.buttonConfirm);
 
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //check if gender is selected
-                if(genderSelected()) {
+                if(buttonSelected()) {
                     //check for write external permission
                     if(checkPermissions()) {
                         try {
@@ -79,7 +79,7 @@ public class UserSurveyActivity extends AppCompatActivity {
                     }
                 }
                 else {
-                    Toast.makeText(getApplicationContext(),"Please select gender and try again.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),"Please make sure you've filled the survey and try again.", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -134,8 +134,8 @@ public class UserSurveyActivity extends AppCompatActivity {
     /*//////////////////////////////////////////////////////////////////////////
     // Utils
     //////////////////////////////////////////////////////////////////////////*/
-    private boolean genderSelected() {
-        if(genderRadioGroup.getCheckedRadioButtonId() == -1)
+    private boolean buttonSelected() {
+        if(genderRadioGroup.getCheckedRadioButtonId() == -1 || glassesRadioGroup.getCheckedRadioButtonId() == -1)
             return false;
 
         return true;
@@ -143,11 +143,10 @@ public class UserSurveyActivity extends AppCompatActivity {
 
     private void saveUserDataToFile() throws IOException {
         String gender = radioButtonMale.isChecked() ? "Male" : "Female";
-        String glasses = glassesSwitch.isChecked() ? "Yes" : "No";
+        String glasses = radioButtonYes.isChecked() ? "Yes" : "No";
         String age = (String) spinnerAge.getSelectedItem();
-        String fieldOfStudy = (String) spinnerFieldOfStudy.getSelectedItem();
 
-        Log.d(TAG, "USER DATA: " + gender + " " + glasses + " " + age + " " + fieldOfStudy);
+        Log.d(TAG, "USER DATA: " + gender + " " + glasses + " " + age);
 
         String dir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
         String fileName = "UserData.csv";
@@ -163,8 +162,8 @@ public class UserSurveyActivity extends AppCompatActivity {
             w = new CSVWriter(new FileWriter(path));
         }
 
-        String[] keys = {"GENDER", "AGE", "GLASSES", "FIELD_OF_STUDY"};
-        String[] values = {gender,   age,   glasses,   fieldOfStudy};
+        String[] keys = {"GENDER", "AGE", "GLASSES"};
+        String[] values = {gender,   age,   glasses};
         w.writeNext(keys);
         w.writeNext(values);
         w.close();

@@ -40,6 +40,7 @@
 
         <activity
             android:name=".player.local.LocalVideoPlayer"
+            android:screenOrientation="landscape"
             android:theme="@style/AppThemeFullscreen" />
 
         <activity android:name=".UserSurveyActivity" />

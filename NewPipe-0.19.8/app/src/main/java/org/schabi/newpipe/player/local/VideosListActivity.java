@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.Timer;
 
 public class VideosListActivity extends AppCompatActivity {
     private static final String TAG = "VideosListActivity";
@@ -76,6 +77,13 @@ public class VideosListActivity extends AppCompatActivity {
         } else {
             loadVideos();
         }
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

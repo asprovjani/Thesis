@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="glasses_text">Do you wear glasses or contact lenses?</string>
-    <string-array name="field_of_study">
-        <item>Art</item>
-        <item>Engineering</item>
-        <item>Medicine</item>
-        <item>Natural Sciences</item>
-        <item>Social Sciences</item>
-        <item>Other</item>
-    </string-array>
+    <string name="glasses_text">Do you wear glasses<br> or contact lenses?</br></string>
     <string name="main_bg_subtitle">Tap \"Search\" to get started</string>
     <string name="view_count_text">%1$s views</string>
     <string name="upload_date_text">Published on %1$s</string>
