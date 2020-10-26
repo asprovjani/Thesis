@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -37,7 +39,8 @@ public class LocalVideoPlayer extends AppCompatActivity {
 
     private PlayerView playerView;
     private SimpleExoPlayer player;
-    private ImageView resolutionButton;
+    private ImageButton resolutionButton;
+    private TextView resolutionText;
     private SharedPreferences sharedPreferences;
 
     private long videoID;
@@ -55,7 +58,11 @@ public class LocalVideoPlayer extends AppCompatActivity {
         videoID = getIntent().getExtras().getLong("VIDEO_ID");
 
         playerView = findViewById(R.id.playerView);
-        resolutionButton = findViewById(R.id.resolution);
+
+        resolutionText = findViewById(R.id.resolutionText);
+        resolutionText.setText("Resolution: 360p");
+
+        resolutionButton = findViewById(R.id.resolutionButton);
 
 
         resolutionButton.setOnClickListener(new View.OnClickListener() {
@@ -149,12 +156,15 @@ public class LocalVideoPlayer extends AppCompatActivity {
     private void getNextVideo(String videoTitle) {
         if(videoTitle.contains("360p")) {
             videoTitle = videoTitle.replace("360p", "480p");
+            resolutionText.setText("Resolution: 480p");
         }
         else if(videoTitle.contains("480p")) {
             videoTitle = videoTitle.replace("480p", "720p");
+            resolutionText.setText("Resolution: 720p");
         }
         else {
             videoTitle = videoTitle.replace("720p", "1080p");
+            resolutionText.setText("Resolution: 1080p");
             resolutionButton.setVisibility(View.INVISIBLE);
         }
 
