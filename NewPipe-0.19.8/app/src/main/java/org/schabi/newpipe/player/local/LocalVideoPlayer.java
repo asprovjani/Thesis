@@ -1,5 +1,6 @@
 package org.schabi.newpipe.player.local;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -7,6 +8,7 @@ import android.content.ContentUris;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -29,11 +31,15 @@ import org.schabi.newpipe.R;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Set;
 
 import static java.lang.Character.isDigit;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 public class LocalVideoPlayer extends AppCompatActivity {
     private final String TAG = "LocalVideoPlayer";
 
@@ -45,6 +51,8 @@ public class LocalVideoPlayer extends AppCompatActivity {
 
     private long videoID;
     private ArrayList<String> videoList = new ArrayList<>();
+
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,14 +212,14 @@ public class LocalVideoPlayer extends AppCompatActivity {
             w = new CSVWriter(fWriter);
 
             if(sharedPreferences.getBoolean("firstWrite", true)) {
-                String[] key = {"VIDEO_TITLE"};
+                String[] key = {"VIDEO_TITLE", "TIME"};
                 w.writeNext(key);
                 SharedPreferences.Editor preferencesEdit = sharedPreferences.edit();
                 preferencesEdit.putBoolean("firstWrite", false);
                 preferencesEdit.apply();
             }
 
-            String[] value = {videoTitle};
+            String[] value = {videoTitle, dtf.format(LocalDateTime.now())};
             w.writeNext(value);
             w.close();
         }
