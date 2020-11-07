@@ -86,7 +86,7 @@ public class UserSurveyActivity extends AppCompatActivity {
 
         //populate age spinner
         ArrayList<String> ageList = new ArrayList<>();
-        for(int i = 18; i < 70; i++)
+        for(int i = 12; i < 70; i++)
             ageList.add(Integer.toString(i));
 
         ArrayAdapter<String> spinnerAgeAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, ageList);
