@@ -65,21 +65,15 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.navigation.NavigationView;
 
-import org.schabi.newpipe.database.stream.model.StreamEntity;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
-import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler;
-import org.schabi.newpipe.extractor.playlist.PlaylistExtractor;
-import org.schabi.newpipe.extractor.playlist.PlaylistInfo;
 import org.schabi.newpipe.extractor.services.peertube.PeertubeInstance;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.fragments.BackPressable;
 import org.schabi.newpipe.fragments.MainFragment;
 import org.schabi.newpipe.fragments.detail.VideoDetailFragment;
-import org.schabi.newpipe.fragments.list.playlist.PlaylistFragment;
 import org.schabi.newpipe.fragments.list.search.SearchFragment;
-import org.schabi.newpipe.local.bookmark.BookmarkFragment;
 import org.schabi.newpipe.report.ErrorActivity;
 import org.schabi.newpipe.services.UserContextService;
 import org.schabi.newpipe.util.AndroidTvUtils;
@@ -95,7 +89,6 @@ import org.schabi.newpipe.util.TLSSocketFactoryCompat;
 import org.schabi.newpipe.util.ThemeHelper;
 import org.schabi.newpipe.views.FocusOverlayView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
     /*//////////////////////////////////////////////////////////////////////////
     // Activity's LifeCycle
     //////////////////////////////////////////////////////////////////////////*/
-
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         if (DEBUG) {

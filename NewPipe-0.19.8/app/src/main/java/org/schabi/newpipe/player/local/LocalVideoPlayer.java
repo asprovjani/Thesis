@@ -14,7 +14,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -31,11 +30,9 @@ import org.schabi.newpipe.R;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Set;
 
 import static java.lang.Character.isDigit;
 
@@ -54,6 +51,9 @@ public class LocalVideoPlayer extends AppCompatActivity {
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
+    /*//////////////////////////////////////////////////////////////////////////
+    // Activity's LifeCycle
+    //////////////////////////////////////////////////////////////////////////*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,9 +71,8 @@ public class LocalVideoPlayer extends AppCompatActivity {
         resolutionText.setText("Resolution: 360p");
 
         resolutionButton = findViewById(R.id.resolutionButton);
-
-
         resolutionButton.setOnClickListener(new View.OnClickListener() {
+            //load better resolution when button is pressed
             @Override
             public void onClick(View v) {
                 String videoTitle = "";
@@ -133,6 +132,9 @@ public class LocalVideoPlayer extends AppCompatActivity {
         super.onStop();
     }
 
+    /*//////////////////////////////////////////////////////////////////////////
+    // Utils
+    //////////////////////////////////////////////////////////////////////////*/
     private void initializePlayer() {
         if(player == null) {
             player = new SimpleExoPlayer.Builder(this).build();

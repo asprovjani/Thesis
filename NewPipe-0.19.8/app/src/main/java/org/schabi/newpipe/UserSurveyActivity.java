@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import com.opencsv.CSVWriter;
 
-import org.schabi.newpipe.player.local.LocalVideoPlayer;
 import org.schabi.newpipe.player.local.VideosListActivity;
 
 import java.io.File;
@@ -66,7 +65,7 @@ public class UserSurveyActivity extends AppCompatActivity {
         confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //check if gender is selected
+                //check if radio buttons are selected
                 if(buttonSelected()) {
                     //check for write external permission
                     if(checkPermissions()) {

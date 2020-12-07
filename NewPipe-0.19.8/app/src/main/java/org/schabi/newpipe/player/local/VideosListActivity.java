@@ -78,6 +78,7 @@ public class VideosListActivity extends AppCompatActivity {
             loadVideos();
         }
 
+        //stop the thread for 2 sec to give time for the videos to load
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
