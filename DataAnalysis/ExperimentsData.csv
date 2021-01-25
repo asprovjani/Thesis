@@ -1,16 +1,16 @@
 Video ID,Playlist ID,SI,TI,Video Title in App,URL
-11,1,L(6.381),L(3.746),Video1_Sitting_LL,https://www.youtube.com/watch?v=qS368iXcUvk
-12,5,L(32.068),H(37.522),Video2_Sitting_LH,https://www.youtube.com/watch?v=bQcLmdLSlcA
-13,8,H(111.645),L(8.368),Video3_Sitting_HL,https://www.youtube.com/watch?v=sfjN15zsPyQ
-14,12,H(120.505),H(30.116),Video4_Sitting_HH,https://www.youtube.com/watch?v=DaFRheiGED0
-21,2,L(11.102),L(3.577),Video1_Walking_LL,https://www.youtube.com/watch?v=NLOp_6uPccQ
-22,6,L(29.882),H(38.734),Video2_Walking_LH,https://www.youtube.com/watch?v=7apltfVJBwU
-23,9,H(102.139),L(6.447),Video3_Walking_HL,https://www.youtube.com/watch?v=FoIf3yBMUbQ
-24,10,H(99.431),H(28.227),Video4_Walking_HH,https://www.youtube.com/watch?v=hLfflw9hE-k
-31,3,L(29.024),L(1.443),Video1_Running_LL,https://www.youtube.com/watch?v=J7GY1Xg6X20
-32,4,L(31.026),H(32.039),Video2_Running_LH,https://www.youtube.com/watch?v=xB4coS5-vDQ
-33,7,H(97.254),L(8.187),Video3_Running_HL,https://www.youtube.com/watch?v=WuDy1XOU6_E
-34,11,H(118.447),H(38.515),Video4_Running_HH,https://www.youtube.com/watch?v=L5inD4XWz4U
+11,1,L(8.778),L(3.687),Video1_Sitting_LL,https://www.youtube.com/watch?v=qS368iXcUvk
+12,5,L(38.861),H(36.951),Video2_Sitting_LH,https://www.youtube.com/watch?v=bQcLmdLSlcA
+13,8,H(138.691),L(8.303),Video3_Sitting_HL,https://www.youtube.com/watch?v=sfjN15zsPyQ
+14,12,H(136.498),H(28.59),Video4_Sitting_HH,https://www.youtube.com/watch?v=DaFRheiGED0
+21,2,L(14.343),L(3.491),Video1_Walking_LL,https://www.youtube.com/watch?v=NLOp_6uPccQ
+22,6,L(40.179),H(38.442),Video2_Walking_LH,https://www.youtube.com/watch?v=7apltfVJBwU
+23,9,H(117.562),L(6.145),Video3_Walking_HL,https://www.youtube.com/watch?v=FoIf3yBMUbQ
+24,10,H(118.669),H(26.814),Video4_Walking_HH,https://www.youtube.com/watch?v=hLfflw9hE-k
+31,3,L(41.164),L(1.424),Video1_Running_LL,https://www.youtube.com/watch?v=J7GY1Xg6X20
+32,4,L(40.308),H(31.631),Video2_Running_LH,https://www.youtube.com/watch?v=xB4coS5-vDQ
+33,7,H(123.356),L(8.147),Video3_Running_HL,https://www.youtube.com/watch?v=WuDy1XOU6_E
+34,11,H(138.758),H(37.133),Video4_Running_HH,https://www.youtube.com/watch?v=L5inD4XWz4U
 Experiment ID,User ID,Video ID,Mobility State,Starting Resolution,End Resolution
 1,111,11,Sitting,360,720
 1,111,12,Sitting,360,480
