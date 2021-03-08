@@ -18,6 +18,8 @@ library('lmerTest')
         step
 
 library(MuMIn)
+library(ggeffects)
+library(ggplot2)
 
 classes <- c(rep("numeric", 3), "character", rep("numeric", 2), rep("character", 2), rep("numeric", 2), "character", "numeric")
 
@@ -440,14 +442,87 @@ summary(mu_si_activity_i_gender_i)
 ## 3.4 Final Model
 
 ```R
-mu_si_activity_i_gender_i: EndResolution ~ 1 + SI * Activity + SI * Gender + (1 | UserID)
+#mu_si_activity_i_gender_i: EndResolution ~ 1 + SI * Activity + SI * Gender + (1 | UserID)
 
 r.squaredGLMM(mu_si_activity_i_gender_i)
     
                R2m       R2c
     [1,] 0.1937995 0.4827858
+
+qqnorm(resid(mu_si_activity_i_gender_i))
+qqline(resid(mu_si_activity_i_gender_i))
 ```
 ![User Model Q-Q plot](userModelResiduals.jpg)
+
+### 3.4.1 Slopes for SI
+
+```R
+unique(d$UserID)
+    
+    111 120 121 131 132 141 
+    210 211 220 221 230 231 
+    240 310 311 321 330 331 
+    340 110 130 140
+
+mu1_1 <- ggpredict(mu_si_activity_i_gender_i,
+    terms = c("SI", "UserID [111, 120, 121, 131, 132, 141, 210, 211, 220]"),
+    type = "random")
+
+plot(mu1_1)
+```
+![User model SI slopes 1-9](muSI_1.jpg)
+
+```R
+mu1_2 <- ggpredict(mu_si_activity_i_gender_i,
+    terms = c("SI", "UserID [221, 230, 231, 240, 310, 311, 321, 330, 331]"),
+    type = "random")
+
+plot(mu1_2)
+```
+
+![User model SI slopes 10-18](muSI_2.jpg)
+
+```R
+mu1_3 <- ggpredict(mu_si_activity_i_gender_i,
+    terms = c("SI", "UserID [340, 110, 130, 140]"),
+    type = "random")
+
+plot(mu1_3)
+```
+
+![User model SI slopes 19-22](muSI_3.jpg)
+
+### 3.4.2 Slopes for Activity
+
+```R
+mu2_1 <- ggpredict(mu_si_activity_i_gender_i,
+    terms = c("SI", "Activity", "UserID [111, 120, 121, 131, 132, 141, 210, 211, 220]"),
+    type = "random")
+
+plot(mu2_1)
+```
+
+![User model Activity slopes 1-9](muActivity_1.jpg)
+
+```R
+mu2_2 <- ggpredict(mu_si_activity_i_gender_i,
+    terms = c("SI", "Activity", "UserID [221, 230, 231, 240, 310, 311, 321, 330, 331]"),
+    type = "random")
+
+plot(mu2_2)
+```
+
+![User model Activity slopes 10-18](muActivity_2.jpg)
+
+```R
+mu2_3 <- ggpredict(mu_si_activity_i_gender_i,
+    terms = c("SI", "Activity", "UserID [340, 110, 130, 140]"),
+    type = "random")
+
+plot(mu2_3)
+```
+
+![User model Activity slopes 19-22](muActivity_3.jpg)
 
 ## 4. Null model, grouping by Personality
 
@@ -935,16 +1010,80 @@ summary(mp_si_ai_gir_glasses)
 ## 4.6 Final model
 
 ```R
-mp_si_ai_gir_glasses: EndResolution ~ 1 + SI * Activity + SI * Gender + Glasses + (Glasses + Gender || Personality)
+#mp_si_ai_gir_glasses: EndResolution ~ 1 + SI * Activity + SI * Gender + Glasses + (Glasses + Gender || Personality)
 
 r.squaredGLMM(mp_si_ai_gir_glasses)
                R2m       R2c
     [1,] 0.1698925 0.5491555
+
+qqnorm(resid(mp_si_ai_gir_glasses))
+qqline(resid(mp_si_ai_gir_glasses))    
 ```
 
 ![Personality Model Q-Q plot](personalityModelResiduals.jpg)
 
+### 4.6.1 Slopes for SI
+
+```R
+mp1 <- ggpredict(mp_si_ai_gir_glasses,
+    terms = c("SI", "Personality"),
+    type = "random")
+
+plot(mp1) + scale_x_continuous(breaks = seq(0, 150, 25))
+```
+![Personality model SI slopes](mpSI.jpg)
+
+### 4.6.2 Slopes for Activity
+
+```R
+mp2 <- ggpredict(mp_si_ai_gir_glasses,
+    terms = c("SI", "Activity", "Personality"),
+    type = "random")
+
+plot(mp2) + scale_x_continuous(breaks = seq(0, 150, 25))
+```
+
+![Personality model Activity slopes](mpActivity.jpg)
+
+### 4.6.3 Slopes for Glasses
+
+```R
+mp3 <- ggpredict(mp_si_ai_gir_glasses,
+    terms = c("SI", "Glasses", "Personality"),
+    type = "random")
+
+plot(mp3)
+```
+![Personality model Glasses slopes](mpGlasses.jpg)
+
+### 4.6.4 Slopes for Gender
+
+```R
+mp4 <- ggpredict(mp_si_ai_gir_glasses,
+    terms = c("SI", "Gender", "Personality"),
+    type = "random")
+
+plot(mp4) + scale_x_continuous(breaks = seq(0, 150, 25))
+```
+
+![Personality model Gender slopes](mpGender.jpg)
+
 ## 5. Null model, grouping by Cluster
+For this model the users were grouped into clusters by their personality traits. Each cluster is marked with 5 binary digits that represent each personality trait respectively. A 1 indicates that the user is above the 50th percentile for the given personality trait, and 0 indicates that the user is below the 50th percentile. This approach allows us to form 32 clusters, however due to the limited dataset we only managed to group the users in 15 clusters.
+
+```R
+# Digit 1 -> Extraversion
+# Digit 2 -> Agreeableness
+# Digit 3 -> Conscientiousness
+# Digit 4 -> Neuroticism
+# Digit 5 -> Openness
+
+unique(d$Cluster) # list all clusters
+
+     "00010" "10000" "00101" "10001" "11011" 
+     "10110" "11001" "01000" "11000" "01011" 
+     "00110" "01001" "01101" "11111" "10111"
+```
 
 ```R
 mc.null <- lmer(EndResolution ~ 1 + (1 | Cluster), data=d)
@@ -1352,12 +1491,109 @@ summary(mc_ai_g_gender_i)
 ## 5.4 Final model
 
 ```R
-mc_ai_g_gender_i: EndResolution ~ 1 + SI * Activity + Glasses + SI * Gender + (Glasses || Cluster)
+# mc_ai_g_gender_i: EndResolution ~ 1 + SI * Activity + Glasses + SI * Gender + (Glasses || Cluster)
 
 r.squaredGLMM(mc_ai_g_gender_i)
           
               R2m       R2c
     [1,] 0.232854 0.5339462
+
+qqnorm(resid(mc_ai_g_gender_i))
+qqline(resid(mc_ai_g_gender_i))
 ```
 
 ![Cluster Model Q-Q plot](clusterModelResiduals.jpg)
+
+### 5.4.1 Slopes for SI
+
+```R
+unique(d$Cluster) #list all clusters
+
+     "00010" "10000" "00101" "10001" "11011" 
+     "10110" "11001" "01000" "11000" "01011" 
+     "00110" "01001" "01101" "11111" "10111"
+
+mc1_1 <- ggpredict(mc_ai_g_gender_i,
+       terms = c("SI", "Cluster [00010, 10000, 00101, 10001, 11011, 10110, 11001, 01000]"),
+       type = "random")
+
+plot(mc1_1) + scale_x_continuous(breaks = seq(0, 150, 25))
+```
+![Cluster model SI slopes groups 1-8 plot](mcSI_1.jpg)
+
+
+```R
+ mc1_2 <- ggpredict(mc_ai_g_gender_i,
+        terms = c("SI", "Cluster [11000, 01011, 00110, 01001, 01101, 11111, 10111]"),
+        type = "random")
+
+plot(mc1_2) + scale_x_continuous(breaks = seq(0, 150, 25))
+```
+![Cluster model SI slopes groups 9-15 plot](mcSI_2.jpg)
+
+### 5.4.2 Slopes for Activity
+
+```R
+mc2_1 <- ggpredict(mc_ai_g_gender_i,
+        terms = c("SI", "Cluster [00010, 10000, 00101, 10001, 11011, 10110, 11001, 01000, 11000]"),
+        type = "random")
+
+plot(mc2_1)
+```
+
+![Cluster model Acivity slopes groups 1-9](mcActivity_1.jpg)
+
+```R
+mc2_2 <- ggpredict(mc_ai_g_gender_i,
+        terms = c("SI", "Activity", "Cluster [01011, 00110, 01001, 01101, 11111, 10111]"),
+        type = "random")
+
+plot(mc2_2)
+```
+
+![Cluster model Acivity slopes groups 10-15](mcActivity_2.jpg)
+
+
+### 5.4.3 Slopes for Glasses
+
+```R
+mc3_1 <- ggpredict(mc_ai_g_gender_i,
+        terms = c("SI", "Glasses", "Cluster [00010, 10000, 00101, 10001, 11011, 10110, 11001, 01000, 11000]"),
+        type = "random")
+
+plot(mc3_1)
+```
+
+![Cluster model Glasses slopes groups 1-9](mcGlasses_1.jpg)
+
+```R
+mc3_2 <- ggpredict(mc_ai_g_gender_i,
+        terms = c("SI", "Glasses", "Cluster [01011, 00110, 01001, 01101, 11111, 10111]"),
+        type = "random")
+
+plot(mc3_2)
+```
+
+![Cluster model Glasses slopes groups 10-15](mcGlasses_2.jpg)
+
+### 5.4.4 Slopes for Gender
+
+```R
+mc4_1 <- ggpredict(mc_ai_g_gender_i,
+        terms = c("SI", "Gender", "Cluster [00010, 10000, 00101, 10001, 11011, 10110, 11001, 01000, 11000]"),
+        type = "random")
+
+plot(mc4_1)
+```
+
+![Cluster model Gender slopes groups 1-9](mcGender_1.jpg)
+
+```R
+mc4_2 <- ggpredict(mc_ai_g_gender_i,
+        terms = c("SI", "Gender", "Cluster [01011, 00110, 01001, 01101, 11111, 10111, ]"),
+        type = "random")
+
+plot(mc4_2)
+```
+
+![Cluster model Gender slopes groups 10-15](mcGender_2.jpg)
