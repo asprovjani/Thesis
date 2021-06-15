@@ -1,11 +1,8 @@
 package org.schabi.newpipe.services;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -15,20 +12,9 @@ import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.preference.PreferenceManager;
 
-import com.opencsv.CSVWriter;
+import org.schabi.newpipe.activity_recognition.HARClassifier;
 
-import org.schabi.newpipe.MainActivity;
-import org.schabi.newpipe.classificator.HARClassifier;
-import org.schabi.newpipe.fragments.detail.VideoDetailFragment;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -65,8 +51,10 @@ public class UserContextService extends Service implements SensorEventListener {
 
     private HARClassifier classifier;
     private float[] results;
-    private String[] labels = {"Biking", "Downstairs", "Jogging", "Sitting", "Standing", "Upstairs", "Walking"};
+    //                         "Biking", "Downstairs", "Running", "Sitting", "Standing", "Upstairs", "Walking"
+    private String[] labels = {"Biking", "Downstairs", "Running", "Standing", "Standing", "Upstairs", "Walking"};
 
+    /*
     String prevTitle = "";
     String prevQuality = "";
     //BroadcastReceiver
@@ -101,6 +89,7 @@ public class UserContextService extends Service implements SensorEventListener {
             }
         }
     };
+    */
 
     /*//////////////////////////////////////////////////////////////////////////
     // Service LifeCycle
@@ -112,24 +101,24 @@ public class UserContextService extends Service implements SensorEventListener {
         Log.d(TAG, "Creating service");
 
         initClassifier();
-        registerReceiver(bReceiver, new IntentFilter("RESOLUTIONS_READY"));
-        registerReceiver(bReceiver, new IntentFilter("STREAM_INFO"));
+        //registerReceiver(bReceiver, new IntentFilter("RESOLUTIONS_READY"));
+        //registerReceiver(bReceiver, new IntentFilter("STREAM_INFO"));
 
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Starting service");
-        /*
+
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 String userContext = getUserContext();
-                //if(!userContext.equals(""))
-                //    sendContextToActivity(userContext);
+                if(!userContext.equals(""))
+                    sendContextToActivity(userContext);
             }
-        }, 1000, 3000); */
+        }, 1000, 3000);
 
         return Service.START_STICKY;
     }
@@ -139,13 +128,14 @@ public class UserContextService extends Service implements SensorEventListener {
         super.onDestroy();
 
         Log.d(TAG, "Destroying service");
-
+        /*
         try {
             unregisterReceiver(bReceiver);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
+        */
     }
 
     @Nullable
@@ -294,7 +284,7 @@ public class UserContextService extends Service implements SensorEventListener {
         }
         return labels[idx];
     }
-
+    /*
     private void saveToFile(String title, String quality) throws IOException {
         String dir = android.os.Environment.getExternalStorageDirectory().getAbsolutePath();
         String fileName = "UserData.csv";
@@ -323,7 +313,7 @@ public class UserContextService extends Service implements SensorEventListener {
             w.writeNext(values);
             w.close();
         }
-    }
+    } */
 
     private void sendContextToActivity(String context) {
         Intent result = new Intent();

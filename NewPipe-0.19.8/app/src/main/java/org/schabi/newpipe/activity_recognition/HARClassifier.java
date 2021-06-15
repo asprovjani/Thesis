@@ -1,4 +1,4 @@
-package org.schabi.newpipe.classificator;
+package org.schabi.newpipe.activity_recognition;
 
 import android.content.Context;
 

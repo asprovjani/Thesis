@@ -4,17 +4,25 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -26,6 +34,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.opencsv.CSVWriter;
 
 import org.schabi.newpipe.R;
+import org.schabi.newpipe.services.UserContextService;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -50,6 +59,44 @@ public class LocalVideoPlayer extends AppCompatActivity {
     private ArrayList<String> videoList = new ArrayList<>();
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
+    //service
+    private UserContextService userContextService;
+    private boolean isBound;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "Service bound");
+
+            UserContextService.RunServiceBinder binder = (UserContextService.RunServiceBinder) service;
+            userContextService = binder.getService();
+            isBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "Service disconnect");
+            isBound = false;
+        }
+    };
+
+    //BroadcastReceiver
+    UserContextReceiver receiver;
+    String result;
+    class UserContextReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals("USER_CONTEXT_ACTION")) {
+                result = intent.getStringExtra("USER_CONTEXT");
+                showMessage(result);
+            }
+        }
+    }
+
+    private void showMessage(String message) {
+        Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+    }
 
     /*//////////////////////////////////////////////////////////////////////////
     // Activity's LifeCycle
@@ -105,6 +152,18 @@ public class LocalVideoPlayer extends AppCompatActivity {
         if (Util.SDK_INT >= 24) {
             initializePlayer();
         }
+
+        //register BroadcastReceiver
+        receiver = new UserContextReceiver();
+        registerReceiver(receiver, new IntentFilter("USER_CONTEXT_ACTION"));
+
+        //Start and bing UserContextService
+        Log.d(TAG, "Starting and binding UserContextService");
+
+        Intent i = new Intent(this, UserContextService.class);
+        startService(i);
+
+        bindService(i, mConnection, 0);
     }
 
     @Override
@@ -130,6 +189,18 @@ public class LocalVideoPlayer extends AppCompatActivity {
         }
         sharedPreferences.edit().putLong("CURRENT_POSITION", -1).apply();
         super.onStop();
+
+        //Stop UserContextService and unregister BroadcastReceiver
+        if(isBound) {
+            unbindService(mConnection);
+            isBound = false;
+        }
+
+        try {
+            unregisterReceiver(receiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     /*//////////////////////////////////////////////////////////////////////////
