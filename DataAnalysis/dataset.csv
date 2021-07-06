@@ -262,7 +262,6 @@ ExperimentID,UserID,VideoID,Activity,StartResolution,EndResolution,Gender,Person
 22,140,31,Running,360,720,Female,Neuroticism,41.164,1.424,10111,0
 22,140,32,Running,360,480,Female,Neuroticism,40.308,31.631,10111,0
 22,140,33,Running,360,480,Female,Neuroticism,123.356,8.147,10111,0
-22,140,34,Running,360,480,Female,Neuroticism,138.758,37.133,10111,0
 23,320,11,Sitting,360,1080,Male,Conscientiousness,8.778,3.687,00100,0
 23,320,12,Sitting,360,1080,Male,Conscientiousness,38.861,36.951,00100,0
 23,320,13,Sitting,360,480,Male,Conscientiousness,138.691,8.303,00100,0
@@ -275,3 +274,4 @@ ExperimentID,UserID,VideoID,Activity,StartResolution,EndResolution,Gender,Person
 23,320,32,Running,360,480,Male,Conscientiousness,40.308,31.631,00100,0
 23,320,33,Running,360,480,Male,Conscientiousness,123.356,8.147,00100,0
 23,320,34,Running,360,720,Male,Conscientiousness,138.758,37.133,00100,0
+22,140,34,Running,360,480,Female,Neuroticism,138.758,37.133,10111,0
